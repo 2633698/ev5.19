@@ -1,0 +1,116 @@
+{
+    "environment": {
+        "grid_id": "DEFAULT001",
+        "charger_count": 200,
+        "chargers_per_station": 15,
+        "station_count": 20,
+        "user_count": 600,
+        "region_count": 8,
+        "simulation_days": 3,
+        "time_step_minutes": 15,
+        "map_bounds": {
+            "lat_min": 30.0,
+            "lat_max": 30.05,
+            "lng_min": 116.0,
+            "lng_max": 116.05
+        },
+        "charger_failure_rate": 0.0,
+        "enable_uncoordinated_baseline": true,
+        "min_charge_threshold_percent": 20.0,
+        "force_charge_soc_threshold": 20.0,
+        "default_charge_soc_threshold": 40.0,
+        "charger_queue_capacity": 5,
+        "user_soc_distribution": [
+            [0.15, [10, 30]],
+            [0.35, [30, 60]],
+            [0.35, [60, 80]],
+            [0.15, [80, 95]]
+          ],
+        "vehicle_types": {
+            "sedan": {"battery_capacity": 60, "max_range": 400, "max_charging_power": 60},
+            "suv": {"battery_capacity": 85, "max_range": 480, "max_charging_power": 90},
+            "compact": {"battery_capacity": 40, "max_range": 350, "max_charging_power": 50},
+            "luxury": {"battery_capacity": 100, "max_range": 550, "max_charging_power": 120},
+            "truck": {"battery_capacity": 120, "max_range": 500, "max_charging_power": 150}
+        },
+         "charger_defaults": {
+            "superfast_ratio": 0.1,
+            "fast_ratio": 0.4,
+            "power_ranges": {
+                "superfast": [250, 400],
+                "fast": [60, 120],
+                "normal": [7, 20]
+            },
+            "price_multipliers": {"superfast": 1.5, "fast": 1.2, "normal": 1.0}
+        }
+    },
+    "grid": {
+        "base_load": [
+            32000, 28000, 24000, 22400, 21600, 24000, 36000, 48000, 60000, 64000, 65600, 67200,
+            64000, 60000, 56000, 52000, 56000, 60000, 68000, 72000, 64000, 56000, 48000, 40000
+        ],
+        "solar_generation": [
+            0, 0, 0, 0, 0, 0, 8000, 16000, 28800, 40000, 48000, 51200,
+            48000, 44800, 40000, 32000, 16000, 4800, 0, 0, 0, 0, 0, 0
+        ],
+        "wind_generation": [
+            19200, 22400, 24000, 20800, 16000, 19200, 24000, 27200, 20800, 16000, 19200, 20800,
+            24000, 27200, 25600, 22400, 25600, 28800, 32000, 28800, 25600, 24000, 20800, 22400
+        ],
+        "peak_hours": [ 7, 8, 9, 10, 18, 19, 20, 21 ],
+        "valley_hours": [ 0, 1, 2, 3, 4, 5 ],
+        "normal_price": 0.85,
+        "peak_price": 1.2,
+        "valley_price": 0.4,
+        "system_capacity_kw": 80000
+    },
+    "model": {
+        "input_dim": 19,
+        "hidden_dim": 128,
+        "task_hidden_dim": 64,
+        "model_path": "models/ev_charging_model.pth"
+    },
+    "scheduler": {
+        "scheduling_algorithm": "rule_based",
+        "optimization_weights": {
+            "user_satisfaction": 0.35,
+            "operator_profit": 0.35,
+            "grid_friendliness": 0.35
+        },
+        "marl_config": {
+            "action_space_size": 6,
+            "discount_factor": 0.95,
+            "exploration_rate": 0.1,
+            "learning_rate": 0.01,
+            "q_table_path": "models/marl_q_tables.pkl",
+            "marl_candidate_max_dist_sq": 0.15,
+            "marl_priority_w_soc": 0.5,
+            "marl_priority_w_dist": 0.4,
+            "marl_priority_w_urgency": 0.1
+        },
+        "use_trained_model": false,
+        "use_multi_agent": true
+    },
+    "algorithms": {
+        "rule_based": {
+            "max_queue": {"peak": 3, "valley": 12, "shoulder": 6},
+            "weight_adjustment": {"grid_boost_factor": 200, "valley_grid_reduction": 0.15},
+            "candidate_limit": 15,
+            "queue_penalty": 0.05
+         },
+         "uncoordinated": {
+             "soc_threshold": 50,
+             "max_queue": 4,
+             "score_weights": {"distance": 0.7, "queue_penalty_km": 5.0}
+         }
+    },
+    "strategies": {
+        "balanced": {"user_satisfaction": 0.33, "operator_profit": 0.33, "grid_friendliness": 0.34},
+        "grid": {"user_satisfaction": 0.2, "operator_profit": 0.2, "grid_friendliness": 0.6},
+        "profit": {"user_satisfaction": 0.2, "operator_profit": 0.6, "grid_friendliness": 0.2},
+        "user": {"user_satisfaction": 0.6, "operator_profit": 0.2, "grid_friendliness": 0.2}
+    },
+    "visualization": {
+        "output_dir": "output"
+    }
+}
