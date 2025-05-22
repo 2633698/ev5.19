@@ -189,6 +189,77 @@ python cli.py --days 3 --algorithm marl --strategy grid --output results/marl_gr
 
 运行 `python cli.py --help` 查看所有可用选项。
 
+## Python GUI Application
+
+In addition to the Web UI and CLI, this project includes a desktop GUI application built with Python, PySide6, and Matplotlib for more direct interaction and visualization of the simulation.
+
+### Dependencies
+
+The Python GUI application requires the following main libraries:
+
+*   Python 3.8+
+*   PySide6 (for the GUI framework)
+*   matplotlib (for plotting charts)
+*   numpy (for numerical operations, often a dependency of matplotlib/pandas)
+*   pandas (for data handling, potentially used by GUI components)
+
+It is recommended to install these via the `requirements.txt` file:
+
+```bash
+pip install -r requirements.txt
+```
+
+If `requirements.txt` is not up-to-date or if you encounter issues, you may need to install these packages manually:
+
+```bash
+pip install PySide6 matplotlib numpy pandas
+```
+
+### Running the GUI
+
+To launch the Python GUI application, navigate to the project's root directory and run:
+
+```bash
+python -m gui.main_app
+```
+
+Alternatively, depending on your Python path setup, you might run:
+
+```bash
+python gui/main_app.py
+```
+Using `python -m gui.main_app` is generally recommended for consistency with Python's module system.
+
+### Features Overview
+
+The GUI provides several views organized into tabs:
+
+*   **Macro Control Tab (`宏观控制`):**
+    *   **Simulation Controls:** Buttons to Start, Pause/Resume, and Reset the simulation.
+    *   **Parameter Selection:** Dropdown menus to choose the active "Strategy Mode" (e.g., balanced, user-focused) and "Scheduling Algorithm" (e.g., rule_based, MARL). These selections dynamically update the configuration used for new simulation runs.
+    *   **Live KPI Display:** Shows key performance indicators (User Satisfaction, Operator Profit, Grid Friendliness, Overall Score) as text labels, updated live during the simulation.
+    *   **Live KPI Chart:** A Matplotlib chart visualizes the trend of these KPIs over simulation steps.
+
+*   **Grid View Tab (`电网视图`):**
+    *   **Live Overall Grid Metrics:** Displays aggregated metrics for the entire grid, such as total load, total EV load, and overall renewable energy contribution.
+    *   **Detailed Regional Data Table:** A table showing live, per-region data including base load, EV load, total load, load percentage, solar generation, wind generation, and renewable ratio.
+    *   **Regional Load Charts:**
+        *   A line chart displaying the total load curves for a few representative regions over time.
+        *   A bar chart comparing a specific metric (e.g., current EV load) across all regions.
+    *   **Simplified Regional Status Map:** A visual grid of colored blocks representing each region, with colors changing based on current load percentage to provide a quick operational overview.
+
+*   **User View Tab (`用户视图`):**
+    *   Currently a placeholder for future user-specific visualizations or interactions.
+
+*   **Operator View Tab (`运营商视图`):**
+    *   Currently a placeholder for future operator-specific dashboards or controls.
+
+### Troubleshooting (Linux Headless Environments)
+
+If you are running the GUI on a headless Linux server or a minimal desktop environment (e.g., inside some types of Docker containers without X11 forwarding), you might encounter an error similar to:
+`qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found.`
+This typically means that the necessary X11 libraries or a running X server (required by the "xcb" Qt platform plugin) are not available. The GUI application is primarily intended for use in a standard desktop environment. For headless operation, the CLI (`cli.py`) or Web UI (`app.py`) are recommended.
+
 ## 配置说明
 
 系统的核心行为和参数通过 `config.json` 文件进行控制。该文件允许用户详细定制：
